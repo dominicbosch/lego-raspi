@@ -14,8 +14,7 @@ void setup() {
   Wire.onRequest(requestEvents);
   Wire.onReceive(receiveEvents);
 
-  Serial.println("Ready");
-  Serial.println("-------------------------------------I am Slave1");              
+  Serial.println("Ready Slave 1");              
 }
 
 void loop() {}

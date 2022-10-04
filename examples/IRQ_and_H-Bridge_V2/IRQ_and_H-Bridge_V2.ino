@@ -114,7 +114,10 @@ void spin_and_wait(int pwm_A, int duration){
 
 void dataReceived(int byteCount) {
   while (Wire.available()) {
-    inVal = Wire.read();
+    char c = Wire.read();
+//    inVal = Wire.read();
+    Serial.print("char captured: ");
+    Serial.println(c);
     Serial.print("Value captured: ");
     Serial.println(inVal);
   }
