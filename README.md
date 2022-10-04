@@ -15,7 +15,7 @@ The i2c interface allows communication through byte exchange. The first byte swi
 
 # Devices
 ## Motors
-The motors currently in use are the [lego NXT motors](https://www.philohome.com/nxtmotor/nxtmotor.htm) (or [here as pdf for eternity](documetnation/motorspecs.pdf)). Each motor needs a motor driver. we currently use the [DRV8833](https://www.ti.com/product/DRV8833).
+The motors currently in use are the [lego NXT motors](https://www.philohome.com/nxtmotor/nxtmotor.htm) (or [here as pdf for eternity](documentation/motorspecs.pdf)). Each motor needs a motor driver. we currently use the [DRV8833](https://www.ti.com/product/DRV8833).
 
 Each of these setups occupy 4 pins:
 - 2 pins for motion, one for each direction while the other one needs to be LOW.
