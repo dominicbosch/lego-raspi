@@ -26,7 +26,7 @@ with smbus.SMBus(1) as I2Cbus:
         # e.g.: 0|0|0|5|6|2|3
 
         cmd = raw_input("Enter command: ")
-        arr = list(map(int, explode("|", cmd)))
+        arr = list(map(int, cmd.spit("|")))
 
 
         # BytesToSend = ConvertStringsToBytes(cmd);
