@@ -53,9 +53,9 @@ void dataReceived(int byteCount) {
     Serial.print("Receiving Bytes: ");
     Serial.println(byteCount);
     while (Wire.available()) {
-        char c = Wire.read();
-        Serial.print("char captured: ");
-        Serial.println(c);
+        int byte = Wire.read();
+        Serial.print("byte captured: ");
+        Serial.println(byte);
     }
 
 }

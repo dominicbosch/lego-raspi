@@ -8,13 +8,6 @@ forever = True;             # Endless loop to catch commands
 
 I2C_SLAVE_ADDRESS = 0x05    # i2c Bus Adress for Master and Slave
 
-# Converting a string to an array of bytes.
-def ConvertStringsToBytes(src):
-    converted = []
-    for b in src:
-        converted.append(ord(b))
-    return converted
-
 I2Cbus = smbus.SMBus(1)
 with smbus.SMBus(1) as I2Cbus:
     
@@ -28,13 +21,11 @@ with smbus.SMBus(1) as I2Cbus:
         cmd = raw_input("Enter command: ")
         arr = list(map(int, cmd.split("|")))
 
-
-        # BytesToSend = ConvertStringsToBytes(cmd);
-
+        firstByte = arr.pop(0)
         print("Sent " + str(I2C_SLAVE_ADDRESS) + " the " + str(cmd) + " command.")
         print(arr)
 
-        I2Cbus.write_i2c_block_data(I2C_SLAVE_ADDRESS, 0x00, arr)
+        I2Cbus.write_i2c_block_data(I2C_SLAVE_ADDRESS, firstByte, arr)
         
         data=I2Cbus.read_i2c_block_data(I2C_SLAVE_ADDRESS,0x00,16)
         print("recieve from slave:")
