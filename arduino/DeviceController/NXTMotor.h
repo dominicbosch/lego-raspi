@@ -7,8 +7,7 @@
 
 #include <Arduino.h>
 
-class NXTMotor
-{
+class NXTMotor {
     public:
         NXTMotor(int pinMotionA, int pinMotionB, int pinSensorA, int pinSensorB);
 
@@ -19,7 +18,7 @@ class NXTMotor
 
         void triggerSensorA_ISR();
         void triggerSensorB_ISR();
-        
+
         void printConfiguration();
         void printTimer();
         

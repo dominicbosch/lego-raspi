@@ -5,8 +5,7 @@
 #include "Arduino.h"
 #include "NXTMotor.h"
 
-NXTMotor::NXTMotor(int pinMotionA, int pinMotionB, int pinSensorInterruptA, int pinSensorInterruptB)
-{
+NXTMotor::NXTMotor(int pinMotionA, int pinMotionB, int pinSensorInterruptA, int pinSensorInterruptB) {
     _pinMotionA = pinMotionA;
     _pinMotionB = pinMotionB;
     _pinSensorInterruptA = pinSensorInterruptA;
@@ -30,19 +29,16 @@ NXTMotor::NXTMotor(int pinMotionA, int pinMotionB, int pinSensorInterruptA, int 
     PUBLIC Functions
 */
 
-int NXTMotor::getSensorAPin()
-{
+int NXTMotor::getSensorAPin() {
     return _pinSensorInterruptA;
 }
 
-int NXTMotor::getSensorBPin()
-{
+int NXTMotor::getSensorBPin() {
     return _pinSensorInterruptB;
 }
 
 // Speed = pwm
-void NXTMotor::setSpeed(int speed)
-{
+void NXTMotor::setSpeed(int speed) {
     if(speed < 0) { // reverse speeds
         analogWrite(_pinMotionA, -speed);
         digitalWrite(_pinMotionB, LOW);
@@ -52,34 +48,31 @@ void NXTMotor::setSpeed(int speed)
     }
 }
 
-void NXTMotor::triggerSensorA_ISR()
-{
+void NXTMotor::triggerSensorA_ISR() {
     long now = micros();
     _deltaToLastSensorATrigger = _lastSensorATrigger - now;
     _lastSensorATrigger = now;
 }
 
-void NXTMotor::triggerSensorB_ISR()
-{
+void NXTMotor::triggerSensorB_ISR() {
     long now = micros();
     _deltaToLastSensorBTrigger = _lastSensorBTrigger - now;
     _lastSensorBTrigger = now;
 }
 
-void NXTMotor::printConfiguration()
-{
+void NXTMotor::printConfiguration() {
     Serial.println("Initializing NXTMotor: ");
     Serial.print("pinMotionA: ");
     Serial.println(_pinMotionA);
     Serial.print("pinMotionB: ");
     Serial.println(_pinMotionB);
-    Serial.print("pinSensorA: ");
+    Serial.print("pinSensorInterruptA: ");
     Serial.println(_pinSensorInterruptA);
-    Serial.print("pinSensorB: ");
+    Serial.print("pinSensorInterruptB: ");
     Serial.println(_pinSensorInterruptB);
 }
-void NXTMotor::printTimer()
-{
+
+void NXTMotor::printTimer() {
     String outStr = "Time in Microseconds : " + String(_deltaToLastSensorATrigger);
     outStr = outStr + " - " + String(_deltaToLastSensorBTrigger);
 

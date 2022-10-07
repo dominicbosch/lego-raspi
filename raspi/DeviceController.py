@@ -21,12 +21,12 @@ with smbus.SMBus(1) as I2Cbus:
         cmd = raw_input("Enter command: ")
         arr = list(map(int, cmd.split("|")))
 
-        firstByte = arr.pop(0)
         print("Sent " + str(I2C_SLAVE_ADDRESS) + " the " + str(cmd) + " command.")
         print(arr)
 
+        firstByte = arr.pop(0)
         I2Cbus.write_i2c_block_data(I2C_SLAVE_ADDRESS, firstByte, arr)
-        
+        time.sleep(0.001)
         data=I2Cbus.read_i2c_block_data(I2C_SLAVE_ADDRESS,0x00,16)
         print("recieve from slave:")
         print(data)

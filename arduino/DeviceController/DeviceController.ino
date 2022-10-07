@@ -5,8 +5,10 @@
 #include "NXTMotor.h"
 
 #define address 0x05          //I2c Address
+#define replyLength 16
 
 long inVal = 0;               // Value to be captured from the I2c bus
+char arrReply[replyLength];
 
 const long interval = 5000;
 unsigned long previousMillis = millis();
@@ -32,14 +34,13 @@ void setup() {
     // Initialize Sensor Interrupts. Attach an interrupt to the ISR vector
     attachInterrupt(digitalPinToInterrupt(motorA->getSensorAPin()), triggerMotorASensorA_ISR, RISING);
     attachInterrupt(digitalPinToInterrupt(motorA->getSensorBPin()), triggerMotorASensorB_ISR, RISING);
-    }
+}
 
 void loop() {
     report_Timer();
 }
 
-void report_Timer()
-{
+void report_Timer() {
     unsigned long currentMillis = millis();
 
     if (currentMillis - previousMillis >= interval) {
@@ -52,16 +53,44 @@ void report_Timer()
 void dataReceived(int byteCount) {
     Serial.print("Receiving Bytes: ");
     Serial.println(byteCount);
-    while (Wire.available()) {
+
+    int i = 0;
+    int arrBytes[byteCount];
+    while (Wire.available())
+    {
         int byte = Wire.read();
         Serial.print("byte captured: ");
         Serial.println(byte);
+        arrBytes[i++] = byte;
     }
+    processCommand(arrBytes);
+}
+
+void processCommand(int arrBytes[]) {
+    switch(arrBytes[0]) {
+        case 0: // Device Initialisation
+            processCommandDeviceInit(arrBytes);
+        break;
+
+        case 1: // Device Control
+            processCommandDeviceControl(arrBytes);
+        break;
+    }
+}
+
+void processCommandDeviceInit(int arrBytes[]) {
+
+}
+
+void processCommandDeviceControl(int arrBytes[]) {
 
 }
 
 void sendData() {
-    Wire.write(inVal);
+    Wire.write(arrReply);
+
+    // Clear the reply that was just sent
+    memset(arrReply, 0, replyLength);
 }
 
 /*
