@@ -26,7 +26,7 @@ with smbus.SMBus(1) as I2Cbus:
 
         firstByte = arr.pop(0)
         I2Cbus.write_i2c_block_data(I2C_SLAVE_ADDRESS, firstByte, arr)
-        time.sleep(0.5) # we need to sleep quite a long time for the slow i2c to transmit :-O
+        time.sleep(0.01) # we need to sleep quite a long time for the slow i2c to transmit :-O
         data=I2Cbus.read_i2c_block_data(I2C_SLAVE_ADDRESS,0x00,16)
         print("recieve from slave:")
         print(data)

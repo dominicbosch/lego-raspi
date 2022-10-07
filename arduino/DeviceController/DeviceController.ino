@@ -51,16 +51,16 @@ void report_Timer() {
 
 
 void dataReceived(int byteCount) {
-    Serial.print("Receiving Bytes: ");
-    Serial.println(byteCount);
+    //Serial.print("Receiving Bytes: ");
+    //Serial.println(byteCount);
 
     int i = 0;
     int arrBytes[byteCount];
     while (Wire.available())
     {
         int byte = Wire.read();
-        Serial.print("byte captured: ");
-        Serial.println(byte);
+        //Serial.print("byte captured: ");
+        //Serial.println(byte);
         arrBytes[i++] = byte;
     }
     processCommand(arrBytes);
