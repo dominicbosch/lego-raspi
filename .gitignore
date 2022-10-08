@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+# built files in git commit is baaaad practice
+build/
+
+# let's keep the vs code configuration locally
+.vscode/

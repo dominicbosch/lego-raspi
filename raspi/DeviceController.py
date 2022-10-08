@@ -3,10 +3,13 @@
 import sys
 import smbus2 as smbus
 import time
+import pandas as pd
 
 forever = True;             # Endless loop to catch commands
 
 I2C_SLAVE_ADDRESS = 0x05    # i2c Bus Adress for Master and Slave
+
+pd.read_csv('../error_codes.tsv', sep='\t')
 
 I2Cbus = smbus.SMBus(1)
 with smbus.SMBus(1) as I2Cbus:
@@ -30,4 +33,6 @@ with smbus.SMBus(1) as I2Cbus:
         data=I2Cbus.read_i2c_block_data(I2C_SLAVE_ADDRESS,0x00,16)
         print("recieve from slave:")
         print(data)
+        if data[0] < 0:
+            print(df.loc[df['code'] == data[0]])
 

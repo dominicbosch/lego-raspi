@@ -3,37 +3,28 @@
 
 // Include NXTMotor Controller
 #include "NXTMotor.h"
+// Include CommandProcessor
+#include "Devices.h"
 
-#define address 0x05          //I2c Address
-#define replyLength 16
+#define BAUD_RATE 115200            // should be fast enough and still allow serial to work
+#define I2C_ADDRESS 0x05            // I2C Address
+#define STATIC_REPLY_LENGTH 16      // comm protocol: slave always sends 16 bytes after each command received
+#define PRINTERVAL 5000             // The print interval
 
-long inVal = 0;               // Value to be captured from the I2c bus
-char arrReply[replyLength];
-
-const long interval = 5000;
+// initialize the reply array that needs to be filled before the master requests the answer
+char arrReplyToMaster[STATIC_REPLY_LENGTH];
 unsigned long previousMillis = millis();
 
-// Current limitation of this code
-// Define Motor A with motion pins 5 & 6 and sensor pins 2 & 3
-NXTMotor* motorA;
-NXTMotor* motorB;
-NXTMotor* motorC;
-//(5, 6, 2, 3);
+Devices* devices = new Devices();
 
 void setup() {
-    Serial.begin(9600);
+    Serial.begin(BAUD_RATE);
 
-    Wire.begin(address);
+    Wire.begin(I2C_ADDRESS);
     Wire.onReceive(dataReceived);
     Wire.onRequest(sendData);
 
     Serial.println("Application Ready");
-
-    motorA = new NXTMotor(5, 6, 2, 3);
-    motorA->printConfiguration();
-    // Initialize Sensor Interrupts. Attach an interrupt to the ISR vector
-    attachInterrupt(digitalPinToInterrupt(motorA->getSensorAPin()), triggerMotorASensorA_ISR, RISING);
-    attachInterrupt(digitalPinToInterrupt(motorA->getSensorBPin()), triggerMotorASensorB_ISR, RISING);
 }
 
 void loop() {
@@ -43,62 +34,78 @@ void loop() {
 void report_Timer() {
     unsigned long currentMillis = millis();
 
-    if (currentMillis - previousMillis >= interval) {
+    if (currentMillis - previousMillis >= PRINTERVAL) {
         previousMillis = currentMillis;
-        motorA->printTimer();
+        // motorA->printTimer();
     }
 }
 
-// be careful not to print to serial in ISR!!!
+// We gladly receive some bytes from the master (dynamic length).
+// while he expects us to reply with 16 bytes later on
 void dataReceived(int byteCount) {
-    //Serial.print("Receiving Bytes: ");
-    //Serial.println(byteCount);
-
     int i = 0;
     int arrBytes[byteCount];
-    while (Wire.available())
-    {
+    while (Wire.available()) {
         int byte = Wire.read();
-        //Serial.print("byte captured: ");
-        //Serial.println(byte);
         arrBytes[i++] = byte;
     }
-    processCommand(arrBytes);
+    processCommand(arrBytes);    
 }
 
+// We try to make sense of what the master sent us and pipe the command
+// into the correct channels (currently either device initialisation or control)
 void processCommand(int arrBytes[]) {
+    // Switch on Scenario
     switch(arrBytes[0]) {
         case 0: // Device Initialisation
             processCommandDeviceInit(arrBytes);
-        break;
+            break;
 
         case 1: // Device Control
-            processCommandDeviceControl(arrBytes);
-        break;
+            devices->processCommandDeviceControl(arrBytes);
+            break;
     }
 }
 
 void processCommandDeviceInit(int arrBytes[]) {
+    // Switch on DeviceType
+    switch(arrBytes[1]) {
+        case 0: // NXTMotor
+            initializeNXTMotor(arrBytes);
+            break;
 
+        // Currently no other devices configured...
+    }
 }
 
-void processCommandDeviceControl(int arrBytes[]) {
-
+void initializeNXTMotor(int arrBytes[]) {
+    NXTMotor* pMotor;
+    if (arrBytes[2] == 0) pMotor = devices->motorA;
+    else if (arrBytes[2] == 1) pMotor = devices->motorB;
+    else if (arrBytes[2] == 2) pMotor = devices->motorC;
+    else arrReplyToMaster[0] = -11;
+    
+    pMotor = new NXTMotor(arrBytes[3], arrBytes[4], arrBytes[5], arrBytes[6]);
+    //pMotor->printConfiguration();
+    // Initialize Sensor Interrupts. Attach an interrupt to the ISR vector
+    attachInterrupt(digitalPinToInterrupt(pMotor->getSensorAPin()), triggerMotorASensorA_ISR, RISING);
+    attachInterrupt(digitalPinToInterrupt(pMotor->getSensorBPin()), triggerMotorASensorB_ISR, RISING);
 }
+
 
 void sendData() {
-    Wire.write(arrReply);
-
-    // Clear the reply that was just sent
-    memset(arrReply, 0, replyLength);
+    Wire.write(arrReplyToMaster);
+    // Clear the reply array
+    memset(arrReplyToMaster, 0, STATIC_REPLY_LENGTH);
 }
 
 /*
-    Static functions for the interrupt handling of all motors
+    Static functions for the interrupt handling of all motors.
+    So called glue functions...
 */
-void triggerMotorASensorA_ISR() { motorA->triggerSensorA_ISR(); }
-void triggerMotorASensorB_ISR() { motorA->triggerSensorB_ISR(); }
-void triggerMotorBSensorA_ISR() { motorB->triggerSensorA_ISR(); }
-void triggerMotorBSensorB_ISR() { motorB->triggerSensorB_ISR(); }
-void triggerMotorCSensorA_ISR() { motorC->triggerSensorA_ISR(); }
-void triggerMotorCSensorB_ISR() { motorC->triggerSensorB_ISR(); }
+void triggerMotorASensorA_ISR() { devices->motorA->triggerSensorA_ISR(); }
+void triggerMotorASensorB_ISR() { devices->motorA->triggerSensorB_ISR(); }
+void triggerMotorBSensorA_ISR() { devices->motorB->triggerSensorA_ISR(); }
+void triggerMotorBSensorB_ISR() { devices->motorB->triggerSensorB_ISR(); }
+void triggerMotorCSensorA_ISR() { devices->motorC->triggerSensorA_ISR(); }
+void triggerMotorCSensorB_ISR() { devices->motorC->triggerSensorB_ISR(); }
