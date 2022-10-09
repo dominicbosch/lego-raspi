@@ -4,17 +4,30 @@ Commanding the NXT devices through Arduino &amp; RaspberryPi
 # Raspberry
 The raspberry should advertise itself as lego1 in the configured networks.
 Login via `ssh pi@lego1`. pw is what we often used for supersonic dev devices!
+Install pandas: `pip install pandas`
 
 # i2c communication protocol
 The i2c interface allows communication through byte exchange. Using SMBUS we are limited to 32 bytes at once. The first byte switches between different scenarios
 
 ## `0` - Initialisation of devices
-The byte array is interpreted as: `0[DeviceType][DeviceID][Pin1][Pin2]...[PinN]`
+Each device type expects a different number of initialization bytes.  
 
-DeviceType 0 - NXTMotor: Requires 4 pins:
+### DeviceType 0 - NXTMotor
+
+Byte Array sent from Master to Slave: `00[DeviceID][MotionPinA][MotionPinB][SensorInterruptPinA][SensorInterruptPinB]`
+
+`[DeviceID]` maps like this:
+
+- `0`: MotorA
+- `1`: MotorB
+- `2`: MotorC
+
+Requires 4 pins:
 
 - 2 pins for motion, one for each direction while the other one needs to be LOW.
 - 2 pins for the optical sensor feedback that allows to monitor the movement of the motor. These pins need to be handled as interrupts and the time differential between the interrupt invocation determines the speed in one direction and also the angle so far.
+
+Example byte array from master: 0 0 0 5 6 2 3 initializes a NXTMotor, identified with DeviceID 0 (MotorA), with MotionPinA 5, MotionPinB 6, SensorInterruptPinA 2 & SensorInterruptPinB 3
 
 ## `1` - Control the device
 set run parameters or get sensor output. `1[DeviceID][Method][Param1]...[ParamN]`

@@ -19,10 +19,10 @@ with smbus.SMBus(1) as I2Cbus:
         # INIT Device Message Format: 0[DeviceType][DeviceID][Pin1]...[PinN]
         # For DeviceType 0 (NXT Motor), four pins need to be defined: MotionA, MotionB, InterruptSensorA, InterruptSensorB.
         # There is also only three slots available for NXT Motors (DeviceID)
-        # e.g.: 0|0|0|5|6|2|3
+        # e.g.: 0 0 0 5 6 2 3
 
         cmd = raw_input("Enter command: ")
-        arr = list(map(int, cmd.split("|")))
+        arr = list(map(int, cmd.split(" ")))
 
         print("Sent " + str(I2C_SLAVE_ADDRESS) + " the " + str(cmd) + " command.")
         print(arr)
@@ -33,6 +33,8 @@ with smbus.SMBus(1) as I2Cbus:
         data=I2Cbus.read_i2c_block_data(I2C_SLAVE_ADDRESS,0x00,16)
         print("recieve from slave:")
         print(data)
-        if data[0] < 0:
-            print(df.loc[df['code'] == data[0]])
+
+        # Handle error codes:
+        if data[0] == 255:
+            print(df.loc[df['code'] == data[1]])
 

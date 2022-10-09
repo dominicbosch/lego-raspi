@@ -46,8 +46,7 @@ void dataReceived(int byteCount) {
     int i = 0;
     int arrBytes[byteCount];
     while (Wire.available()) {
-        int byte = Wire.read();
-        arrBytes[i++] = byte;
+        arrBytes[i++] = Wire.read();
     }
     processCommand(arrBytes);    
 }
@@ -78,20 +77,30 @@ void processCommandDeviceInit(int arrBytes[]) {
     }
 }
 
+// Currently there are three available slots hard wired for NXTMotors
 void initializeNXTMotor(int arrBytes[]) {
-    NXTMotor* pMotor;
-    if (arrBytes[2] == 0) pMotor = devices->motorA;
-    else if (arrBytes[2] == 1) pMotor = devices->motorB;
-    else if (arrBytes[2] == 2) pMotor = devices->motorC;
-    else arrReplyToMaster[0] = -11;
-    
-    pMotor = new NXTMotor(arrBytes[3], arrBytes[4], arrBytes[5], arrBytes[6]);
-    //pMotor->printConfiguration();
-    // Initialize Sensor Interrupts. Attach an interrupt to the ISR vector
-    attachInterrupt(digitalPinToInterrupt(pMotor->getSensorAPin()), triggerMotorASensorA_ISR, RISING);
-    attachInterrupt(digitalPinToInterrupt(pMotor->getSensorBPin()), triggerMotorASensorB_ISR, RISING);
+    if (arrBytes[2] == 0) {
+        devices->motorA = new NXTMotor(arrBytes[3], arrBytes[4], arrBytes[5], arrBytes[6]);
+        attachInterrupt(digitalPinToInterrupt(devices->motorA->getSensorAPin()), triggerMotorASensorA_ISR, RISING);
+        attachInterrupt(digitalPinToInterrupt(devices->motorA->getSensorBPin()), triggerMotorASensorB_ISR, RISING);
+    }
+    else if (arrBytes[2] == 1) {
+        devices->motorB = new NXTMotor(arrBytes[3], arrBytes[4], arrBytes[5], arrBytes[6]);
+        attachInterrupt(digitalPinToInterrupt(devices->motorB->getSensorAPin()), triggerMotorBSensorA_ISR, RISING);
+        attachInterrupt(digitalPinToInterrupt(devices->motorB->getSensorBPin()), triggerMotorBSensorB_ISR, RISING);
+    }
+    else if (arrBytes[2] == 2) {
+        devices->motorC = new NXTMotor(arrBytes[3], arrBytes[4], arrBytes[5], arrBytes[6]);
+        attachInterrupt(digitalPinToInterrupt(devices->motorC->getSensorAPin()), triggerMotorCSensorA_ISR, RISING);
+        attachInterrupt(digitalPinToInterrupt(devices->motorC->getSensorBPin()), triggerMotorCSensorB_ISR, RISING);
+    }
+    else setErrorReply(30);
 }
 
+void setErrorReply(int errCode) {
+    arrReplyToMaster[0] = 255;
+    arrReplyToMaster[1] = errCode;
+}
 
 void sendData() {
     Wire.write(arrReplyToMaster);
