@@ -48,29 +48,29 @@ void dataReceived(int byteCount) {
     while (Wire.available()) {
         arrBytes[i++] = Wire.read();
     }
-    processCommand(arrBytes);    
+    processCommand(byteCount, arrBytes);    
 }
 
 // We try to make sense of what the master sent us and pipe the command
 // into the correct channels (currently either device initialisation or control)
-void processCommand(int arrBytes[]) {
+void processCommand(int byteCount, int arrBytes[]) {
     // Switch on Scenario
     switch(arrBytes[0]) {
         case 0: // Device Initialisation
-            processCommandDeviceInit(arrBytes);
+            processCommandDeviceInit(byteCount, arrBytes);
             break;
 
         case 1: // Device Control
-            devices->processCommandDeviceControl(arrBytes);
+            devices->processCommandDeviceControl(byteCount, arrBytes);
             break;
     }
 }
 
-void processCommandDeviceInit(int arrBytes[]) {
+void processCommandDeviceInit(int byteCount, int arrBytes[]) {
     // Switch on DeviceType
     switch(arrBytes[1]) {
         case 0: // NXTMotor
-            initializeNXTMotor(arrBytes);
+            initializeNXTMotor(byteCount, arrBytes);
             break;
 
         // Currently no other devices configured...
@@ -78,29 +78,33 @@ void processCommandDeviceInit(int arrBytes[]) {
 }
 
 // Currently there are three available slots hard wired for NXTMotors
-void initializeNXTMotor(int arrBytes[]) {
+void initializeNXTMotor(int byteCount, int arrBytes[]) {
     if (arrBytes[2] == 0) {
         devices->motorA = new NXTMotor(arrBytes[3], arrBytes[4], arrBytes[5], arrBytes[6]);
         attachInterrupt(digitalPinToInterrupt(devices->motorA->getSensorAPin()), triggerMotorASensorA_ISR, RISING);
         attachInterrupt(digitalPinToInterrupt(devices->motorA->getSensorBPin()), triggerMotorASensorB_ISR, RISING);
+        setConfirmReply(byteCount, arrBytes);
     }
     else if (arrBytes[2] == 1) {
         devices->motorB = new NXTMotor(arrBytes[3], arrBytes[4], arrBytes[5], arrBytes[6]);
         attachInterrupt(digitalPinToInterrupt(devices->motorB->getSensorAPin()), triggerMotorBSensorA_ISR, RISING);
         attachInterrupt(digitalPinToInterrupt(devices->motorB->getSensorBPin()), triggerMotorBSensorB_ISR, RISING);
+        setConfirmReply(byteCount, arrBytes);
     }
     else if (arrBytes[2] == 2) {
         devices->motorC = new NXTMotor(arrBytes[3], arrBytes[4], arrBytes[5], arrBytes[6]);
         attachInterrupt(digitalPinToInterrupt(devices->motorC->getSensorAPin()), triggerMotorCSensorA_ISR, RISING);
         attachInterrupt(digitalPinToInterrupt(devices->motorC->getSensorBPin()), triggerMotorCSensorB_ISR, RISING);
+        setConfirmReply(byteCount, arrBytes);
     }
     else setErrorReply(30);
 }
 
-void setConfirmReply(int arrBytes[]) {
-    int size = sizeof(arrBytes)/sizeof(arrBytes[0]);
-    for(int i=0; i < size; i++) {
-            arrReplyToMaster[i] = arrBytes[i];
+void setConfirmReply(int byteCount, int arrBytes[]) {
+    // Clear the reply array
+    // memset(arrReplyToMaster, 0, STATIC_REPLY_LENGTH);
+    for(int i = 0; i < byteCount; i++) {
+        arrReplyToMaster[i] = arrBytes[i];
     }
 }
 
@@ -111,8 +115,6 @@ void setErrorReply(int errCode) {
 
 void sendData() {
     Wire.write(arrReplyToMaster);
-    // Clear the reply array
-    memset(arrReplyToMaster, 0, STATIC_REPLY_LENGTH);
 }
 
 /*

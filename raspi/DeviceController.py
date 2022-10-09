@@ -30,7 +30,7 @@ with smbus.SMBus(1) as I2Cbus:
 
         firstByte = arr.pop(0)
         I2Cbus.write_i2c_block_data(I2C_SLAVE_ADDRESS, firstByte, arr)
-        time.sleep(0.01)
+        time.sleep(0.1)
         data=I2Cbus.read_i2c_block_data(I2C_SLAVE_ADDRESS, 0x00, 16)
         print("recieve from slave:")
         print(data)

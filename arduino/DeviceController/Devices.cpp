@@ -10,7 +10,7 @@
 Devices::Devices() {}
 
 
-void Devices::processCommandDeviceControl(int arrBytes[]) {
+void Devices::processCommandDeviceControl(int byteCount, int arrBytes[]) {
 
 }
 

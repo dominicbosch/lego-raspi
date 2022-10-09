@@ -16,7 +16,7 @@ class Devices {
         NXTMotor* motorA;
         NXTMotor* motorB;
         NXTMotor* motorC;
-        void processCommandDeviceControl(int arrBytes[]);
+        void processCommandDeviceControl(int byteCount, int arrBytes[]);
 
     private:
 };
