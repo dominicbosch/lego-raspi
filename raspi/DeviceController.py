@@ -9,7 +9,7 @@ forever = True;             # Endless loop to catch commands
 
 I2C_SLAVE_ADDRESS = 0x05    # i2c Bus Adress for Master and Slave
 
-pd.read_csv('../error_codes.tsv', sep='\t')
+df = pd.read_csv('../error_codes.tsv', sep='\t')
 
 I2Cbus = smbus.SMBus(1)
 with smbus.SMBus(1) as I2Cbus:
@@ -20,7 +20,7 @@ with smbus.SMBus(1) as I2Cbus:
         # For DeviceType 0 (NXT Motor), four pins need to be defined: MotionA, MotionB, InterruptSensorA, InterruptSensorB.
         # There is also only three slots available for NXT Motors (DeviceID)
         # e.g.: 0 0 0 5 6 2 3
-
+# 0 0 4 5 6 2 3
         cmd = raw_input("Enter command: ")
         arr = list(map(int, cmd.split(" ")))
 
