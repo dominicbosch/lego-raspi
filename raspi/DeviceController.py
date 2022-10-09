@@ -38,7 +38,7 @@ with smbus.SMBus(1) as I2Cbus:
         # Handle device initialization answer
         if data[0] == 0:
             print("Device Type " + str(data[1]) + " successfully initialized.")
-            print("DeviceID " + str(data[2]) + " on pins " + ", ".join(data[3:6]))
+            print("DeviceID " + str(data[2]) + " on pins " + ", ".join(map(str, data[3:6])))
 
         # Handle error codes:
         if data[0] == 255:
