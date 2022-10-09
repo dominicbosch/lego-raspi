@@ -97,6 +97,13 @@ void initializeNXTMotor(int arrBytes[]) {
     else setErrorReply(30);
 }
 
+void setConfirmReply(int arrBytes[]) {
+    int size = sizeof(arrBytes)/sizeof(arrBytes[0]);
+    for(int i=0; i < size; i++) {
+            arrReplyToMaster[i] = arrBytes[i];
+    }
+}
+
 void setErrorReply(int errCode) {
     arrReplyToMaster[0] = 255;
     arrReplyToMaster[1] = errCode;
