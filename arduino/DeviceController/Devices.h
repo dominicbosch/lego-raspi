@@ -8,17 +8,19 @@
 #include <Arduino.h>
 // Include NXTMotor Controller
 #include "NXTMotor.h"
+#include "ReplyHandler.h"
 
 class Devices {
     public:
-        Devices();
+        Devices(ReplyHandler* reply);
         // Current limitation of this code: hard wired motors
         NXTMotor* motorA;
         NXTMotor* motorB;
         NXTMotor* motorC;
-        void processCommandDeviceControl(int byteCount, int arrBytes[]);
+        void processCommandDeviceControl(int arrBytes[], int byteCount);
 
     private:
+        ReplyHandler* _reply;
 };
 
 #endif
