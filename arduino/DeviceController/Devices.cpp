@@ -25,10 +25,17 @@ void Devices::processCommandDeviceControl(int arrBytes[], int byteCount) {
         else if (arrBytes[1] == 1)  mot = this->motorB;
         else if (arrBytes[1] == 2)  mot = this->motorC;
 
-        // 0 = set speed forward
         
-        if (arrBytes[2] == 0) {
-            mot->setSpeed(arrBytes[3]);
+        switch(arrBytes[2]) {
+            case 0: // set speed forward
+                mot->setForwardSpeed(arrBytes[3]);
+                break;
+            case 1: // set speed backward
+                mot->setBackwardSpeed(arrBytes[3]);
+                break;
+            case 2: // set breaks
+                mot->setBreaks(arrBytes[3]);
+                break;
         }
     }
 }

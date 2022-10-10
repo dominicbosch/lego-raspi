@@ -59,7 +59,7 @@ void processCommand(int arrBytes[], int byteCount) {
             if (arrBytes[1] == 0) { // NXTMotor
                 initializeNXTMotor(arrBytes, byteCount);
             } else {
-                reply->setErrorReply(25);
+                //reply->setErrorReply(25);
             }
             break;
 

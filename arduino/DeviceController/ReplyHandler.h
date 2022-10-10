@@ -18,6 +18,7 @@ class ReplyHandler {
     private:
         int _replyLength;
         char* _arrReplyToMaster;
+        void initReplyArray();
 };
 
 #endif

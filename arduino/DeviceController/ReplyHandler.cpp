@@ -9,6 +9,7 @@ ReplyHandler::ReplyHandler(int replyLength) {
     _replyLength = replyLength;
     // initialize the reply array that needs to be filled before the master requests the answer
     _arrReplyToMaster = new char[_replyLength];
+    memset(_arrReplyToMaster, 0, _replyLength);
 }
 
 char* ReplyHandler::getReply() {
@@ -16,8 +17,9 @@ char* ReplyHandler::getReply() {
 }
 
 void ReplyHandler::setConfirmReply(int arrBytes[], int byteCount) {
+    this->initReplyArray();
     // Clear the reply array
-    memset(_arrReplyToMaster, 0, _replyLength);
+    // memset(_arrReplyToMaster, 0, _replyLength);
     // arrReplyToMaster[0] = arrBytes[0];
     // arrReplyToMaster[1] = arrBytes[1];
     // arrReplyToMaster[2] = arrBytes[2];
@@ -30,14 +32,22 @@ void ReplyHandler::setConfirmReply(int arrBytes[], int byteCount) {
 }
 
 void ReplyHandler::setErrorReply(int errCode) {
+    this->initReplyArray();
     _arrReplyToMaster[0] = 255;
     _arrReplyToMaster[1] = errCode;
 }
 
 void ReplyHandler::setErrorReply(int errCode, int arrMoreInfo[], int byteCount) {
+    this->initReplyArray();
     _arrReplyToMaster[0] = 255;
     _arrReplyToMaster[1] = errCode;
     for (int i = 0; i < byteCount; i++) {
         _arrReplyToMaster[2 + i] = arrMoreInfo[i];
     }
+}
+
+void ReplyHandler::initReplyArray() {
+    delete _arrReplyToMaster;
+    _arrReplyToMaster = new char[_replyLength];
+    memset(_arrReplyToMaster, 0, _replyLength);
 }

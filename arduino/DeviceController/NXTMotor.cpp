@@ -38,14 +38,24 @@ int NXTMotor::getSensorBPin() {
 }
 
 // Speed = pwm
-void NXTMotor::setSpeed(int speed) {
-    if(speed < 0) { // reverse speeds
-        analogWrite(_pinMotionA, -speed);
-        digitalWrite(_pinMotionB, LOW);
-    } else {  // stop or forward
+void NXTMotor::setForwardSpeed(int speed) {
+    analogWrite(_pinMotionA, speed);
+    digitalWrite(_pinMotionB, LOW);
+}
+
+void NXTMotor::setBackwardSpeed(int speed) {
+    analogWrite(_pinMotionA, LOW);
+    digitalWrite(_pinMotionB, -speed);
+}
+
+void NXTMotor::setBreaks(int yes) {
+    if (yes) {
+        digitalWrite(_pinMotionA, HIGH);
+        digitalWrite(_pinMotionB, HIGH);
+    } else {
         digitalWrite(_pinMotionA, LOW);
-        analogWrite(_pinMotionB, speed);
-    }
+        digitalWrite(_pinMotionB, LOW);
+    }    
 }
 
 void NXTMotor::triggerSensorA_ISR() {

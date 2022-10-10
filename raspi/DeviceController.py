@@ -2,8 +2,12 @@
 
 import pandas as pd
 import I2CInterface
+import devices.NXTMotor as NXTMotor
 
 i2c = I2CInterface.I2CInterface(0x20, 16) # slave addr & reply length
+
+motorA = NXTMotor(i2c, 0, 5, 6, 2, 3)
+motorA.forward(100)
 
 df = pd.read_csv('../error_codes.tsv', sep='\t')
 print(df)
@@ -27,7 +31,7 @@ while True:
     # Handle device initialization answer
     if data[0] == 0:
         print("Device Type " + str(data[1]) + " successfully initialized.")
-        print("DeviceID " + str(data[2]) + " on pins " + ", ".join(map(str, data[2:6])))
+        print("DeviceID " + str(data[2]) + " on pins " + ", ".join(map(str, data[3:7])))
 
     # Handle error codes:
     if data[0] == 255:

@@ -14,7 +14,9 @@ class NXTMotor {
         int getSensorAPin();
         int getSensorBPin();
 
-        void setSpeed(int speed);
+        void setForwardSpeed(int speed);
+        void setBackwardSpeed(int speed);
+        void setBreaks(int yes);
 
         void triggerSensorA_ISR();
         void triggerSensorB_ISR();
