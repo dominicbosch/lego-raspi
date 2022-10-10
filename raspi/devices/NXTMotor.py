@@ -7,9 +7,7 @@ class NXTMotor:
         self.motionPinB = motionPinB
         self.sensorPinA = sensorPinA
         self.sensorPinB = sensorPinB
-        data = self.i2c.sendByteArray([0, 0, id, motionPinA, motionPinB, sensorPinA, sensorPinB])
-        print(data)
+        self.i2c.sendByteArray([0, 0, id, motionPinA, motionPinB, sensorPinA, sensorPinB])
 
     def forward(self, speed):
         data = self.i2c.sendByteArray([1, 0, id, 0, speed])
-        print(data)
