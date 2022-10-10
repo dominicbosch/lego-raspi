@@ -18,7 +18,7 @@ while True:
     cmd = raw_input("Enter command: ")
     arr = list(map(int, cmd.split(" ")))
 
-    print("Sent " + str(I2C_SLAVE_ADDRESS) + " the " + str(cmd) + " command.")
+    print("Sent the " + str(cmd) + " command.")
     print(arr)
     data = i2c.sendByteArray(arr)
     print("recieve from slave:")
