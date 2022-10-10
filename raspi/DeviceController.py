@@ -6,7 +6,7 @@ import devices.NXTMotor as NXTMotor
 
 i2c = I2CInterface.I2CInterface(0x20, 16) # slave addr & reply length
 
-motorA = NXTMotor(i2c, 0, 5, 6, 2, 3)
+motorA = NXTMotor.NXTMotor(i2c, 0, 5, 6, 2, 3)
 motorA.forward(100)
 
 df = pd.read_csv('../error_codes.tsv', sep='\t')
