@@ -19,12 +19,12 @@ void Devices::processCommandDeviceControl(int arrBytes[], int byteCount) {
         arrBytes[1] == 2 && !this->motorC) {
             int arr[1] = {arrBytes[1]};
             _reply->setErrorReply(31, arr, 1);
-    } else {
+    } else if (arrBytes[1] == 0 || arrBytes[1] == 1 || arrBytes[1] == 2) {
+        // DeviceIDs 0, 1 & 2 point to NXTMotors
         NXTMotor* mot;
         if (arrBytes[1] == 0)  mot = this->motorA;
         else if (arrBytes[1] == 1)  mot = this->motorB;
         else if (arrBytes[1] == 2)  mot = this->motorC;
-
         
         switch(arrBytes[2]) {
             case 0: // set speed forward

@@ -47,7 +47,8 @@ void dataReceived(int byteCount) {
     while (Wire.available()) {
         arrBytes[i++] = Wire.read();
     }
-    processCommand(arrBytes, byteCount);    
+    processCommand(arrBytes, byteCount);
+    delete arrBytes;    
 }
 
 // We try to make sense of what the master sent us and pipe the command
@@ -59,7 +60,7 @@ void processCommand(int arrBytes[], int byteCount) {
             if (arrBytes[1] == 0) { // NXTMotor
                 initializeNXTMotor(arrBytes, byteCount);
             } else {
-                //reply->setErrorReply(25);
+                // reply->setErrorReply(25);
             }
             break;
 
