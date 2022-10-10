@@ -7,11 +7,12 @@
 
 #define BAUD_RATE 115200            // should be fast enough and still allow serial to work
 #define I2C_ADDRESS 0x20            // I2C Address
-#define STATIC_REPLY_LENGTH 16      // comm protocol: slave always sends 16 bytes after each command received
+#define STATIC_MSG_LENGTH 16        // comm protocol: 16 bytes exchanged back and forth
 #define PRINTERVAL 5000             // The print interval
 
-ReplyHandler* reply = new ReplyHandler(STATIC_REPLY_LENGTH);
+ReplyHandler* reply = new ReplyHandler(STATIC_MSG_LENGTH);
 Devices* devices = new Devices(reply);
+char arrReceivedBytes[STATIC_MSG_LENGTH];
 
 unsigned long previousMillis = millis();
 
@@ -43,17 +44,15 @@ void report_Timer() {
 // while he expects us to reply with 16 bytes later on
 void dataReceived(int byteCount) {
     int i = 0;
-    int arrBytes[byteCount];
     while (Wire.available()) {
-        arrBytes[i++] = Wire.read();
+        arrReceivedBytes[i++] = Wire.read();
     }
-    processCommand(arrBytes, byteCount);
-    delete arrBytes;    
+    processCommand(arrReceivedBytes, byteCount);
 }
 
 // We try to make sense of what the master sent us and pipe the command
 // into the correct channels (currently either device initialisation or control)
-void processCommand(int arrBytes[], int byteCount) {
+void processCommand(char arrBytes[], int byteCount) {
     // Switch on Scenario
     switch(arrBytes[0]) {
         case 0: // Device Initialisation
@@ -71,7 +70,7 @@ void processCommand(int arrBytes[], int byteCount) {
 }
 
 // Currently there are three available slots hard wired for NXTMotors
-void initializeNXTMotor(int arrBytes[], int byteCount) {
+void initializeNXTMotor(char arrBytes[], int byteCount) {
     if (arrBytes[2] == 0 || arrBytes[2] == 1 || arrBytes[2] == 2) {
         NXTMotor* mot = new NXTMotor(arrBytes[3], arrBytes[4], arrBytes[5], arrBytes[6]);
         if (arrBytes[2] == 0) {
@@ -95,7 +94,7 @@ void initializeNXTMotor(int arrBytes[], int byteCount) {
 }
 
 void sendData() {
-    Wire.write(reply->getReply(), STATIC_REPLY_LENGTH);
+    Wire.write(reply->getReply(), STATIC_MSG_LENGTH);
 }
 
 /*

@@ -11,14 +11,13 @@ class ReplyHandler {
     public:
         ReplyHandler(int replyLength);
         char* getReply();
-        void setConfirmReply(int arrBytes[], int byteCount);
+        void setConfirmReply(char arrBytes[], int byteCount);
         void setErrorReply(int errCode);
         void setErrorReply(int errCode, int arrMoreInfo[], int byteCount);
         
     private:
         int _replyLength;
         char* _arrReplyToMaster;
-        void initReplyArray();
 };
 
 #endif
