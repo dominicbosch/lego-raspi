@@ -6,7 +6,7 @@
 #include "ReplyHandler.h"
 
 #define BAUD_RATE 115200            // should be fast enough and still allow serial to work
-#define I2C_ADDRESS 0x05            // I2C Address
+#define I2C_ADDRESS 0x20            // I2C Address
 #define STATIC_REPLY_LENGTH 16      // comm protocol: slave always sends 16 bytes after each command received
 #define PRINTERVAL 5000             // The print interval
 
