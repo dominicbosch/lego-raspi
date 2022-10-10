@@ -1,5 +1,6 @@
 # Control custom devices on a raspberry/arduino stack.
 
+import time
 import pandas as pd
 import I2CInterface
 from devices.NXTMotor import NXTMotor
@@ -13,6 +14,8 @@ i2c = I2CInterface.I2CInterface(0x20, 16) # slave addr & reply length
 
 motorA = NXTMotor(i2c, 0, 5, 6, 2, 3)
 motorA.forward(100)
+time.sleep(5)
+motorA.forward(0)
 
 while True:
     #
