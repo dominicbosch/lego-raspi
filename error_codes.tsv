@@ -1,4 +1,6 @@
 code	description
+0   Not a valid command
+1   Not enough bytes sent for command
 25	Device Type illegal, only 0 NXT Motor available at the moment
 30	Device ID illegal, only 0, 1 & 2 are valid NXT Motor devices
 31	Device not initialized

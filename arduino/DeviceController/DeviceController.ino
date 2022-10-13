@@ -68,12 +68,19 @@ void processCommand(char arrBytes[], int byteCount) {
         case 1: // Device Control
             devices->processCommandDeviceControl(arrBytes, byteCount);
             break;
+        
+        default:
+            reply->setErrorReply(0);
     }
 }
 
 // Currently there are three available slots hard wired for NXTMotors
 void initializeNXTMotor(char arrBytes[], int byteCount) {
     if (arrBytes[2] == 0 || arrBytes[2] == 1 || arrBytes[2] == 2) {
+        if (byteCount < 6) {
+            reply->setErrorReply(1);
+            return;
+        }
         NXTMotor* mot = new NXTMotor(arrBytes[3], arrBytes[4], arrBytes[5], arrBytes[6]);
         if (arrBytes[2] == 0) {
             devices->motorA = mot;
