@@ -53,13 +53,15 @@ void dataReceived(int byteCount) {
 // We try to make sense of what the master sent us and pipe the command
 // into the correct channels (currently either device initialisation or control)
 void processCommand(char arrBytes[], int byteCount) {
+    if (byteCount < 4) return;
+
     // Switch on Scenario
     switch(arrBytes[0]) {
         case 0: // Device Initialisation
             if (arrBytes[1] == 0) { // NXTMotor
                 initializeNXTMotor(arrBytes, byteCount);
             } else {
-                // reply->setErrorReply(25);
+                reply->setErrorReply(25);
             }
             break;
 

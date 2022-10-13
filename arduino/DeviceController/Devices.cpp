@@ -37,6 +37,7 @@ void Devices::processCommandDeviceControl(char arrBytes[], int byteCount) {
                 mot->setBreaks(arrBytes[3]);
                 break;
         }
+        _reply->setConfirmReply(arrBytes, byteCount);
     }
 }
 
