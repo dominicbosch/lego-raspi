@@ -14,9 +14,9 @@ class Devices {
     public:
         Devices(ReplyHandler* reply);
         // Current limitation of this code: hard wired motors
-        NXTMotor* motorA;
-        NXTMotor* motorB;
-        NXTMotor* motorC;
+        NXTMotor* motorA = NULL;
+        NXTMotor* motorB = NULL;
+        NXTMotor* motorC = NULL;
         void processCommandDeviceControl(char arrBytes[], int byteCount);
 
     private:

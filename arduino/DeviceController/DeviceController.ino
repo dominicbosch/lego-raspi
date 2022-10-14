@@ -8,13 +8,15 @@
 #define BAUD_RATE 115200            // should be fast enough and still allow serial to work
 #define I2C_ADDRESS 0x20            // I2C Address
 #define STATIC_MSG_LENGTH 16        // comm protocol: 16 bytes exchanged back and forth
-#define PRINTERVAL 5000             // The print interval
+#define INTERVAL_DEVICE_UPDATE 100  // The interval for the devices to update themselves
+#define INTERVAL_PRINT 5000         // The print interval
 
 ReplyHandler* reply = new ReplyHandler(STATIC_MSG_LENGTH);
 Devices* devices = new Devices(reply);
 char arrReceivedBytes[STATIC_MSG_LENGTH];
 
-unsigned long previousMillis = millis();
+unsigned long previousDeviceMillis = millis();
+unsigned long previousPrintMillis = millis();
 
 void setup() {
     Serial.begin(BAUD_RATE);
@@ -28,15 +30,43 @@ void setup() {
 }
 
 void loop() {
-    report_Timer();
+    updateDevices();
+    printReport();
 }
 
-void report_Timer() {
+void updateDevices() {
+    unsigned long currentMillis = millis();
+    if (currentMillis - previousDeviceMillis >= INTERVAL_DEVICE_UPDATE) {
+        previousDeviceMillis = currentMillis;
+        if(devices->motorA != NULL) devices->motorA->update();
+        if(devices->motorB != NULL) devices->motorB->update();
+        if(devices->motorC != NULL) devices->motorC->update();
+    }
+}
+
+void printReport() {
     unsigned long currentMillis = millis();
 
-    if (currentMillis - previousMillis >= PRINTERVAL) {
-        previousMillis = currentMillis;
-        // motorA->printTimer();
+    if (currentMillis - previousPrintMillis >= INTERVAL_PRINT) {
+        previousPrintMillis = currentMillis;
+        if(devices->motorA != NULL) {
+            Serial.println("MotorA configured");
+            Serial.print("MotorA angle:");
+            Serial.println(devices->motorA->getAngle());
+        } else {
+            Serial.println("MotorA not configured");
+        }
+        if(devices->motorB != NULL) {
+            Serial.println("MotorB configured");
+        } else {
+            Serial.println("MotorB not configured");
+        }
+        if(devices->motorC != NULL) {
+            Serial.println("MotorC configured");
+        } else {
+            Serial.println("MotorC not configured");
+        }
+        Serial.println("\n----------------\n");
     }
 }
 
@@ -84,18 +114,18 @@ void initializeNXTMotor(char arrBytes[], int byteCount) {
         NXTMotor* mot = new NXTMotor(arrBytes[3], arrBytes[4], arrBytes[5], arrBytes[6]);
         if (arrBytes[2] == 0) {
             devices->motorA = mot;
-            attachInterrupt(digitalPinToInterrupt(devices->motorA->getSensorAPin()), triggerMotorASensorA_ISR, RISING);
-            attachInterrupt(digitalPinToInterrupt(devices->motorA->getSensorBPin()), triggerMotorASensorB_ISR, RISING);
+            attachInterrupt(digitalPinToInterrupt(devices->motorA->getSensorAPin()), triggerMotorASensorA_ISR, CHANGE);
+            attachInterrupt(digitalPinToInterrupt(devices->motorA->getSensorBPin()), triggerMotorASensorB_ISR, CHANGE);
         }
         else if (arrBytes[2] == 1) {
             devices->motorB = mot;
-            attachInterrupt(digitalPinToInterrupt(devices->motorB->getSensorAPin()), triggerMotorBSensorA_ISR, RISING);
-            attachInterrupt(digitalPinToInterrupt(devices->motorB->getSensorBPin()), triggerMotorBSensorB_ISR, RISING);
+            attachInterrupt(digitalPinToInterrupt(devices->motorB->getSensorAPin()), triggerMotorBSensorA_ISR, CHANGE);
+            attachInterrupt(digitalPinToInterrupt(devices->motorB->getSensorBPin()), triggerMotorBSensorB_ISR, CHANGE);
         }
         else if (arrBytes[2] == 2) {
             devices->motorC = mot;
-            attachInterrupt(digitalPinToInterrupt(devices->motorC->getSensorAPin()), triggerMotorCSensorA_ISR, RISING);
-            attachInterrupt(digitalPinToInterrupt(devices->motorC->getSensorBPin()), triggerMotorCSensorB_ISR, RISING);
+            attachInterrupt(digitalPinToInterrupt(devices->motorC->getSensorAPin()), triggerMotorCSensorA_ISR, CHANGE);
+            attachInterrupt(digitalPinToInterrupt(devices->motorC->getSensorBPin()), triggerMotorCSensorB_ISR, CHANGE);
         }
         reply->setConfirmReply(arrBytes, byteCount);
     }

@@ -11,6 +11,12 @@ NXTMotor::NXTMotor(int pinMotionA, int pinMotionB, int pinSensorInterruptA, int 
     _pinSensorInterruptA = pinSensorInterruptA;
     _pinSensorInterruptB = pinSensorInterruptB;
 
+    _currentDirection = 0;
+    _currentPosition = 0;
+    _currentRotateToPosition = 0;
+    _rotateToAngle = -1;
+    _rotateToAngleForward = true;
+
     // Initialize Motor Pins
     pinMode(_pinMotionA, OUTPUT);
     pinMode(_pinMotionB, OUTPUT);
@@ -37,19 +43,49 @@ int NXTMotor::getSensorBPin() {
     return _pinSensorInterruptB;
 }
 
-// Speed = pwm
+int NXTMotor::getAngle() {
+    return _currentPosition;
+}
+
+// called by the loop method to give room for any calculation
+void NXTMotor::update() {
+    // If we are executing the move to angle command, things get a bit complicated with 
+    // acceleration and deceleration and so on
+    if (_rotateToAngle > 0) {
+        if(_rotateToAngleForward) _setForwardSpeed(255);
+        else _setBackwardSpeed(255);
+    }
+}
+
 void NXTMotor::setForwardSpeed(int speed) {
+    _rotateToAngle = -1; // stop any pending rotate to command
+    _setForwardSpeed(speed);
+}
+
+// Speed = pwm
+void NXTMotor::_setForwardSpeed(int speed) {
+    if (speed > 0) _currentDirection = 1;
+    else _currentDirection = 0;
     analogWrite(_pinMotionA, speed);
     digitalWrite(_pinMotionB, LOW);
 }
 
 void NXTMotor::setBackwardSpeed(int speed) {
+    _rotateToAngle = -1; // stop any pending rotate to command
+    _setBackwardSpeed(speed);
+}
+
+void NXTMotor::_setBackwardSpeed(int speed) {
+    if (speed > 0) _currentDirection = -1;
+    else _currentDirection = 0;
     analogWrite(_pinMotionA, LOW);
     digitalWrite(_pinMotionB, -speed);
 }
 
-void NXTMotor::setBreaks(int yes) {
-    if (yes) {
+void NXTMotor::stop(bool applyBreaks) {
+    _rotateToAngle = -1;
+    _currentDirection = 0;
+    if (applyBreaks) {
         digitalWrite(_pinMotionA, HIGH);
         digitalWrite(_pinMotionB, HIGH);
     } else {
@@ -58,13 +94,39 @@ void NXTMotor::setBreaks(int yes) {
     }    
 }
 
+void NXTMotor::rotateTo(int angle, bool forward) {
+    _currentRotateToPosition = 0;
+    _rotateToAngle = angle;
+    _rotateToAngleForward = forward;
+}
+
 void NXTMotor::triggerSensorA_ISR() {
+    if (_currentDirection > 0) {
+        _currentPosition++;
+    } else if (_currentDirection < 0) {
+        _currentPosition--;
+    }
+    // we do not update the position if somebody moves the motor by hand
+    // this would require a bit more logic to identify direction through
+    // the sensors. I read somewhere how this is possible but can't recall
+    // it right now, therefore this is a TODO
+
     long now = micros();
     _deltaToLastSensorATrigger = _lastSensorATrigger - now;
     _lastSensorATrigger = now;
 }
 
 void NXTMotor::triggerSensorB_ISR() {
+    if (_currentDirection > 0) {
+        _currentPosition++;
+    } else if (_currentDirection < 0) {
+        _currentPosition--;
+    }
+    // we do not update the position if somebody moves the motor by hand
+    // this would require a bit more logic to identify direction through
+    // the sensors. I read somewhere how this is possible but can't recall
+    // it right now, therefore this is a TODO
+
     long now = micros();
     _deltaToLastSensorBTrigger = _lastSensorBTrigger - now;
     _lastSensorBTrigger = now;

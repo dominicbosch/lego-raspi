@@ -13,10 +13,13 @@ class NXTMotor {
 
         int getSensorAPin();
         int getSensorBPin();
+        int getAngle();
 
+        void update();
         void setForwardSpeed(int speed);
         void setBackwardSpeed(int speed);
-        void setBreaks(int yes);
+        void stop(bool applyBreaks);
+        void rotateTo(int angle, bool forward);
 
         void triggerSensorA_ISR();
         void triggerSensorB_ISR();
@@ -29,11 +32,19 @@ class NXTMotor {
         int _pinMotionB;
         int _pinSensorInterruptA;
         int _pinSensorInterruptB;
+        int _currentDirection;
+        int _currentPosition;
+        int _currentRotateToPosition;
+        int _rotateToAngle;
+        bool _rotateToAngleForward;
 
         volatile long _lastSensorATrigger;
         volatile long _lastSensorBTrigger;
         volatile long _deltaToLastSensorATrigger;
         volatile long _deltaToLastSensorBTrigger;
+
+        void _setForwardSpeed(int speed);
+        void _setBackwardSpeed(int speed);
 };
 
 #endif
