@@ -36,8 +36,7 @@ Regarding sensors from the above linked source:
 	
 > Encoder wheel and enclosure back parts. We have 12 slits in encoder, and motor to encoder gear reduction is 10:32. So for 1 turn of output hub, encoders turns 48*10/32=15 turns, optical detectors sees 15*12=180 slits. Using both sides of slits gives nominal 360 ticks per turn resolution. Note that since we have a quadrature encoder, the maximum resolution is 720 ticks/turn, but this is not used by standard NXT firmware.
 
-:point_right: **Example**
-Byte array sent from master to slave: `0 0 0 5 6 2 3` initializes a NXTMotor, identified with `[DeviceID] 0` (MotorA), with `[MotionPinA] 5`, `[MotionPinB] 6`, `[SensorInterruptPinA] 2` & `[SensorInterruptPinB] 3`
+**Example** Byte array sent from master to slave: `0 0 0 5 6 2 3` initializes a NXTMotor, identified with `[DeviceID] 0` (MotorA), with `[MotionPinA] 5`, `[MotionPinB] 6`, `[SensorInterruptPinA] 2` & `[SensorInterruptPinB] 3`
 
 
 ## `1` - Control the device
@@ -51,22 +50,19 @@ Depending on the Device ID (associated with Device Type), the methods and parame
 #### `0` - setForwardSpeed(speed)
 `1[DeviceID]0[speed]`
 
-:point_right: **Example**
-Byte array sent from master to slave: `1 2 0 255` sets forward speed to `255` on MotorC (`[DeviceID] 2`)
+**Example** Byte array sent from master to slave: `1 2 0 255` sets forward speed to `255` on MotorC (`[DeviceID] 2`)
 
 
 #### `1` - setBackwardSpeed(speed)
 `1[DeviceID]1[speed]`
 
-:point_right: **Example**
-Byte array sent from master to slave: `1 0 1 100` sets backward speed to `100` on MotorA (`[DeviceID] 0`)
+**Example**: Byte array sent from master to slave: `1 0 1 100` sets backward speed to `100` on MotorA (`[DeviceID] 0`)
 
 #### `2` - stop(applyBreaks)
 `1[DeviceID]2[applyBreaks]`
 applyBreaks will be checked for `> 0` to enable breaking mode.
 
-:point_right: **Example**
-Byte array sent from master to slave: `1 0 1 50` sets speed to `0` on MotorB (`[DeviceID] 1`) but enables breaking mode as well (`50 > 0`)
+**Example** Byte array sent from master to slave: `1 0 1 50` sets speed to `0` on MotorB (`[DeviceID] 1`) but enables breaking mode as well (`50 > 0`)
 
 #### `3` - rotateTo(angle)
 
