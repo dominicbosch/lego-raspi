@@ -14,8 +14,16 @@ i2c = I2CInterface.I2CInterface(0x20, 16) # slave addr & reply length
 
 motorA = NXTMotor(i2c, 0, 5, 6, 2, 3)
 motorA.forward(100)
-time.sleep(5)
+time.sleep(2)
+motorA.stop(1) # apply breaks
+time.sleep(1)
+motorA.backward(255)
+time.sleep(2)
 motorA.forward(0)
+time.sleep(1)
+motorA.rotateTo(300, 1)
+time.sleep(5)
+motorA.stop(0) # no breaks
 
 while True:
     #

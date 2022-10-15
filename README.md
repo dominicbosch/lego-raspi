@@ -2,9 +2,20 @@
 Commanding the NXT devices through Arduino &amp; RaspberryPi
 
 # Raspberry
+
+## Setup
 The raspberry should advertise itself as lego1 in the configured networks.
 Login via `ssh pi@lego1`. pw is what we often used for supersonic dev devices!
 Install pandas: `pip install pandas`
+
+## Python Library Usage
+Current testing done via `python3 DeviceController.py`
+
+Current only Device is NXTMotor. Functionalities implemented so far:
+
+- 
+
+
 
 # i2c communication protocol
 
