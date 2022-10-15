@@ -32,7 +32,7 @@ while True:
     # There is also only three slots available for NXT Motors (DeviceID)
     # e.g.: 0 0 0 5 6 2 3
     
-    cmd = raw_input("Enter command: ")
+    cmd = input("Enter command: ")
     arr = list(map(int, cmd.split(" ")))
 
     print("Sent the " + str(cmd) + " command.")
