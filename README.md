@@ -36,7 +36,7 @@ Regarding sensors from the above linked source:
 	
 > Encoder wheel and enclosure back parts. We have 12 slits in encoder, and motor to encoder gear reduction is 10:32. So for 1 turn of output hub, encoders turns 48*10/32=15 turns, optical detectors sees 15*12=180 slits. Using both sides of slits gives nominal 360 ticks per turn resolution. Note that since we have a quadrature encoder, the maximum resolution is 720 ticks/turn, but this is not used by standard NXT firmware.
 
-==Example==
+:point_right: **Example**
 Byte array from master: `0 0 0 5 6 2 3` initializes a NXTMotor, identified with `[DeviceID] 0` (MotorA), with `[MotionPinA] 5`, `[MotionPinB] 6`, `[SensorInterruptPinA] 2` & `[SensorInterruptPinB] 3`
 
 
@@ -50,15 +50,15 @@ Depending on the Device ID (associated with Device Type), the methods and parame
 
 #### `0` - setForwardSpeed(speed)
 
-==Example==
+:point_right: **Example**
 
 #### `1` - setBackwardSpeed(speed)
 
-==Example==
+:point_right: **Example**
 
 #### `2` - stop(applyBreaks)
 
-==Example==
+:point_right: **Example**
 
 #### `3` - rotateTo(angle)
 
