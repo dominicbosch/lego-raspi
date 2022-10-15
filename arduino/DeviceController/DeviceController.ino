@@ -8,7 +8,7 @@
 
 ReplyHandler* reply = new ReplyHandler(STATIC_MSG_LENGTH);
 Devices* devices = new Devices(reply);
-unsigned char arrReceivedBytes[STATIC_MSG_LENGTH]; // we use int to omit issues with -127 to 128
+unsigned char arrReceivedBytes[STATIC_MSG_LENGTH]; // comm protocol expects all 0 - 255 bytes
 
 unsigned long previousDeviceMillis = millis();
 unsigned long previousPrintMillis = millis();
