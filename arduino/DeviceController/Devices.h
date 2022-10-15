@@ -17,7 +17,7 @@ class Devices {
         NXTMotor* motorA = NULL;
         NXTMotor* motorB = NULL;
         NXTMotor* motorC = NULL;
-        void processCommandDeviceControl(char arrBytes[], int byteCount);
+        void processCommandDeviceControl(unsigned char arrBytes[], int byteCount);
 
     private:
         ReplyHandler* _reply;

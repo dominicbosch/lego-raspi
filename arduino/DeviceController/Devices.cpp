@@ -12,7 +12,7 @@ Devices::Devices(ReplyHandler* reply) {
     _reply = reply;
 }
 
-void Devices::processCommandDeviceControl(char arrBytes[], int byteCount) {
+void Devices::processCommandDeviceControl(unsigned char arrBytes[], int byteCount) {
     // check DeviceID
     if (arrBytes[1] == 0 && this->motorA == NULL ||
         arrBytes[1] == 1 && this->motorB == NULL ||

@@ -18,7 +18,7 @@ char* ReplyHandler::getReply() {
     return _arrReplyToMaster;
 }
 
-void ReplyHandler::setConfirmReply(char arrBytes[], int byteCount) {
+void ReplyHandler::setConfirmReply(unsigned char arrBytes[], int byteCount) {
     memset(_arrReplyToMaster, INIT_BYTE, _replyLength);
     // Clear the reply array
     // memset(_arrReplyToMaster, INIT_BYTE, _replyLength);

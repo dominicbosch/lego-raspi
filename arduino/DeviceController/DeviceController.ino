@@ -4,16 +4,11 @@
 #include "NXTMotor.h"
 #include "Devices.h"
 #include "ReplyHandler.h"
-
-#define BAUD_RATE 115200            // should be fast enough and still allow serial to work
-#define I2C_ADDRESS 0x20            // I2C Address
-#define STATIC_MSG_LENGTH 16        // comm protocol: 16 bytes exchanged back and forth
-#define INTERVAL_DEVICE_UPDATE 100  // The interval for the devices to update themselves
-#define INTERVAL_PRINT 5000         // The print interval
+#include "config.h"
 
 ReplyHandler* reply = new ReplyHandler(STATIC_MSG_LENGTH);
 Devices* devices = new Devices(reply);
-char arrReceivedBytes[STATIC_MSG_LENGTH];
+unsigned char arrReceivedBytes[STATIC_MSG_LENGTH]; // we use int to omit issues with -127 to 128
 
 unsigned long previousDeviceMillis = millis();
 unsigned long previousPrintMillis = millis();
@@ -53,6 +48,8 @@ void printReport() {
             Serial.println("MotorA configured");
             Serial.print("MotorA angle:");
             Serial.println(devices->motorA->getAngle());
+            Serial.print("MotorA RPM:");
+            Serial.println(devices->motorA->getCurrentRPM());
         } else {
             Serial.println("MotorA not configured");
         }
@@ -82,7 +79,7 @@ void dataReceived(int byteCount) {
 
 // We try to make sense of what the master sent us and pipe the command
 // into the correct channels (currently either device initialisation or control)
-void processCommand(char arrBytes[], int byteCount) {
+void processCommand(unsigned char arrBytes[], int byteCount) {
     if (byteCount < 4) return;
 
     // Switch on Scenario
@@ -105,7 +102,7 @@ void processCommand(char arrBytes[], int byteCount) {
 }
 
 // Currently there are three available slots hard wired for NXTMotors
-void initializeNXTMotor(char arrBytes[], int byteCount) {
+void initializeNXTMotor(unsigned char arrBytes[], int byteCount) {
     if (arrBytes[2] == 0 || arrBytes[2] == 1 || arrBytes[2] == 2) {
         if (byteCount < 6) {
             reply->setErrorReply(1);
