@@ -7,6 +7,11 @@ Login via `ssh pi@lego1`. pw is what we often used for supersonic dev devices!
 Install pandas: `pip install pandas`
 
 # i2c communication protocol
+
+This section describes how the arduino expects commands over i2c byte array. If successful, the arduino will reply the exact same message, but `255`-filled up to 16 bytes. we might consider dynamic length replys in the future.
+
+If an error happens, the arduino will reply an error code (first byte = `255`), optionally with additional bytes as arguments. [The implemented error codes are described here](error_codes.tsv).
+
 The i2c interface allows communication through byte exchange. Using SMBUS we are limited to 32 bytes at once. We decided to go for 16 bytes as more than enough for now for receiving back data from the slave. However, the sending of bytes allows for dynamic length. The first byte switches between different scenarios:
 
 - `0` - Initialisation of devices
