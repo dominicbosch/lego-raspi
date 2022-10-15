@@ -7,12 +7,17 @@ Login via `ssh pi@lego1`. pw is what we often used for supersonic dev devices!
 Install pandas: `pip install pandas`
 
 # i2c communication protocol
-The i2c interface allows communication through byte exchange. Using SMBUS we are limited to 32 bytes at once. The first byte switches between different scenarios
+The i2c interface allows communication through byte exchange. Using SMBUS we are limited to 32 bytes at once. We decided to go for 16 bytes as more than enough for now for receiving back data from the slave. However, the sending of bytes allows for dynamic length. The first byte switches between different scenarios:
+
+- `0` - Initialisation of devices
+- `1` - Control the device
 
 ## `0` - Initialisation of devices
 Each device type expects a different number of initialization bytes.  
 
-### DeviceType 0 - NXTMotor
+### DeviceType `0` - NXTMotor
+
+The motors currently in use are the [lego NXT motors](https://www.philohome.com/nxtmotor/nxtmotor.htm) (or [here as pdf for eternity](documentation/motorspecs.pdf)). Each motor needs a motor driver. we currently use the [DRV8833](https://www.ti.com/product/DRV8833).
 
 Byte Array sent from Master to Slave: `00[DeviceID][MotionPinA][MotionPinB][SensorInterruptPinA][SensorInterruptPinB]`
 
@@ -22,28 +27,47 @@ Byte Array sent from Master to Slave: `00[DeviceID][MotionPinA][MotionPinB][Sens
 - `1`: MotorB
 - `2`: MotorC
 
-Requires 4 pins:
+Each motor requires 4 pins:
 
-- 2 pins for motion, one for each direction while the other one needs to be LOW.
+- 2 pins for motion, one for each direction while the other one needs to be `LOW`, unless to enable breaking, where both pins are `HIGH`.
 - 2 pins for the optical sensor feedback that allows to monitor the movement of the motor. These pins need to be handled as interrupts and the time differential between the interrupt invocation determines the speed in one direction and also the angle so far.
 
-Example byte array from master: 0 0 0 5 6 2 3 initializes a NXTMotor, identified with DeviceID 0 (MotorA), with MotionPinA 5, MotionPinB 6, SensorInterruptPinA 2 & SensorInterruptPinB 3
-
-## `1` - Control the device
-set run parameters or get sensor output. `1[DeviceID][Method][Param1]...[ParamN]`
-
-
-# Devices
-## NXTMotor
-The motors currently in use are the [lego NXT motors](https://www.philohome.com/nxtmotor/nxtmotor.htm) (or [here as pdf for eternity](documentation/motorspecs.pdf)). Each motor needs a motor driver. we currently use the [DRV8833](https://www.ti.com/product/DRV8833).
-
-From the above linked source:
+Regarding sensors from the above linked source:
 	
 > Encoder wheel and enclosure back parts. We have 12 slits in encoder, and motor to encoder gear reduction is 10:32. So for 1 turn of output hub, encoders turns 48*10/32=15 turns, optical detectors sees 15*12=180 slits. Using both sides of slits gives nominal 360 ticks per turn resolution. Note that since we have a quadrature encoder, the maximum resolution is 720 ticks/turn, but this is not used by standard NXT firmware.
 
+==Example==
+Byte array from master: `0 0 0 5 6 2 3` initializes a NXTMotor, identified with `[DeviceID] 0` (MotorA), with `[MotionPinA] 5`, `[MotionPinB] 6`, `[SensorInterruptPinA] 2` & `[SensorInterruptPinB] 3`
 
-To implement:
-Method Summary
+
+## `1` - Control the device
+Set run parameters or get sensor feedback. Generic byte array format: `1[DeviceID][Method][Param1]...[ParamN]`
+Depending on the Device ID (associated with Device Type), the methods and parameters will be different.
+
+
+### NXTMotor 
+`[DeviceIDs]`: `0`, `1` & `2`, if initialized previously
+
+#### `0` - setForwardSpeed(speed)
+
+==Example==
+
+#### `1` - setBackwardSpeed(speed)
+
+==Example==
+
+#### `2` - stop(applyBreaks)
+
+==Example==
+
+#### `3` - rotateTo(angle)
+
+
+
+
+
+
+# Ideas for future implementation:
  
 Methods inherited from interface lejos.robotics.DCMotor
 getPower, setPower
