@@ -12,18 +12,35 @@ print("\n")
 
 i2c = I2CInterface.I2CInterface(0x20, 16) # slave addr & reply length
 
+###
+# EXAMPLE USAGE
+###
+ 
+print("\nInitializing MotorA")
 motorA = NXTMotor(i2c, 0, 5, 6, 2, 3)
+print("\nMoving forward at 100/255")
 motorA.forward(100)
 time.sleep(2)
+print("\nStopping with breaks")
 motorA.stop(1) # apply breaks
 time.sleep(1)
+print("\nMoving backward 255/255")
 motorA.backward(255)
 time.sleep(2)
+print("\nMoving forward 0/255 i.e. stop")
 motorA.forward(0)
 time.sleep(1)
+print("\nRotating to angle (not yet implemented)")
 motorA.rotateTo(300, 1)
 time.sleep(5)
+print("\nStopping without breaks")
 motorA.stop(0) # no breaks
+
+###
+# EXAMPLE USAGE END
+# START OF CUSTOM USER INPUT VIA COMMAND LINE
+
+###
 
 while True:
     #

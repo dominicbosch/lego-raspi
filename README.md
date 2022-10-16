@@ -16,8 +16,41 @@ Current testing done via `python3 DeviceController.py`
 
 Current only Device is NXTMotor. Functionalities implemented so far:
 
-- 
+```python
+import I2CInterface
+from devices.NXTMotor import NXTMotor
 
+# Initialisation of i2c interface for communication between raspberry and arduino
+# i2cAddr: the i2c address for the communication (e.g. 0x20)
+# replyLength: the fixed size of the byte array that is sent back
+#     from the slave after each command sent from master to slave
+i2c = I2CInterface.I2CInterface(i2cAddr, replyLength) 
+
+# Initialisation of NXT Motor
+#
+# i2cInterface: I2C Interface object that takes care
+#     of the communication with the arduino
+# DeviceID: 1 (MotorA), 2 (MotorB) or 3 (MotorC)
+# MotionPinA: Motion pin forward direction
+# MotionPinB: Motion pin backward direction
+# SensorInterruptPinA: Sensor Pin A
+# SensorInterruptPinB: Sensor Pin B
+motorA = NXTMotor(i2c, DeviceID, MotionPinA, MotionPinB, SensorInterruptPinA, SensorInterruptPinB) 
+
+# forward movement with speed [0-255]
+motorA.forward(speed)
+
+# backward movement [0-255]
+motorA.backward(speed)
+
+# stop: speed will be set to 0. if applyBreaks > 0 then both Motion Pins
+#     will get a HIGH value which results in heavy resistance against momvement
+motorA.stop(applyBreaks)
+
+# rotateTo [not yet implemented]: will move the motor in [direction] (-1 or 1)
+#     until the desired angle is reached
+motorA.rotateTo(toAngle, direction)
+```
 
 
 # i2c communication protocol
